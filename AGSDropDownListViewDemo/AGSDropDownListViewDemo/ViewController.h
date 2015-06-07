@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AGSDropDownListView.h"
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <AGSDropDownListViewDelegate>
 
 
 @end

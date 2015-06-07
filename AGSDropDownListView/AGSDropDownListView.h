@@ -54,7 +54,4 @@
 - (void)dropDownListView:(AGSDropDownListView *)dropdownListView didSelectedIndex:(NSInteger)anIndex;
 - (void)dropDownListView:(AGSDropDownListView *)dropdownListView didSelectIndexList:(NSMutableArray*)indexes;
 
-@optional
-- (void)dropDownListViewDidCancel;
-
 @end

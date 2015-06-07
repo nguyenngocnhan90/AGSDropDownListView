@@ -31,9 +31,21 @@
                                     <action selector="buttonShowDropDownClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="sWI-Az-OVV"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TMo-6X-FRd">
+                                <rect key="frame" x="40" y="112" width="240" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="h9y-gu-ara"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="18"/>
+                                <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="TMo-6X-FRd" firstAttribute="trailing" secondItem="zCV-c7-1nZ" secondAttribute="trailing" id="3al-6p-Nyu"/>
+                            <constraint firstItem="TMo-6X-FRd" firstAttribute="leading" secondItem="zCV-c7-1nZ" secondAttribute="leading" id="D4P-QK-lHG"/>
+                            <constraint firstItem="TMo-6X-FRd" firstAttribute="top" secondItem="zCV-c7-1nZ" secondAttribute="bottom" constant="33" id="NC0-H7-9kb"/>
                             <constraint firstItem="zCV-c7-1nZ" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="19" id="nXu-gK-1ys"/>
                             <constraint firstAttribute="centerX" secondItem="zCV-c7-1nZ" secondAttribute="centerX" id="tjA-pY-9JS"/>
                         </constraints>
@@ -41,6 +53,7 @@
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
                     <connections>
                         <outlet property="buttonShowDropDown" destination="zCV-c7-1nZ" id="Qkn-PQ-44E"/>
+                        <outlet property="labelResult" destination="TMo-6X-FRd" id="E8Q-Nu-gqn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
