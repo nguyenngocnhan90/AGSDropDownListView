@@ -89,19 +89,22 @@
     return self;
 }
 
-- (id)initWithTitle:(NSString *)title objects:(NSArray *)objects attributeName:(NSString *)attributeName frame:(CGRect)rect isMultiple:(BOOL)isMultiple canSearch:(BOOL)isSearching
+- (id)initWithTitle:(NSString *)title
+              objects:(NSArray *)objects
+        attributeName:(NSString *)attributeName
+       attributeImage:(NSString *)attributeImage
+                frame:(CGRect)rect
+           isMultiple:(BOOL)isMultiple
+            canSearch:(BOOL)isSearching
 {
     self = [super initWithFrame:rect];
+    self.attributeName = attributeName;
+    self.attributeImage = attributeImage;
+
+    isShowFromListObjects = YES;
     
     if (self) {
-        NSMutableArray *dataStrings = [[NSMutableArray alloc] init];
-        
-        for (NSObject *obj in objects) {
-            NSString *str = [obj valueForKey:attributeName];
-            [dataStrings addObject:str];
-        }
-        
-        self = [self initWithTitle:title options:dataStrings frame:rect isMultiple:isMultiple canSearch:isSearching];
+        self = [self initWithTitle:title options:objects frame:rect isMultiple:isMultiple canSearch:isSearching];
     }
     
     return self;
@@ -126,6 +129,7 @@
         
         [self.delegate dropDownListView:self didSelectIndexList:arryResponceData];
     }
+    
     // dismiss self
     [self fadeOut];
 }
@@ -203,15 +207,16 @@
 
 - (NSArray *)filtOptionsByKeywork:(NSString *)keyword
 {
-    NSArray *array = _kDropDownOptions;
-    if (_attribute) {
-        array = [_kDropDownOptions valueForKey:_attribute];
-    }
-    
     NSMutableArray *result = [@[] mutableCopy];
-    for (NSString *str in array) {
-        if ([[str lowercaseString] containsString:[keyword lowercaseString]]) {
-            [result addObject:str];
+    
+    for (id object in _kDropDownOptions) {
+        NSString *value = object;
+        if (isShowFromListObjects) {
+            value = [object valueForKeyPath:_attributeName];
+        }
+        
+        if ([[value lowercaseString] containsString:[keyword lowercaseString]]) {
+            [result addObject:object];
         }
     }
     
@@ -297,22 +302,21 @@
     
     [cell.contentView addSubview:imgarrow];
     
-    if (_attribute) {
+    if (isShowFromListObjects) {
         id object = [_options objectAtIndex:row];
-        cell.textLabel.text = [object valueForKey:_attribute];
+        cell.textLabel.text = [object valueForKeyPath:_attributeName];
+        
+        NSString *imageName = [object valueForKeyPath:_attributeImage];
+        cell.imageView.image = [self scaleImage:[UIImage imageNamed:imageName] toSize:CGSizeMake(30, 30)];
     }
     else {
         cell.textLabel.text = [_options objectAtIndex:row];
+        cell.imageView.image = nil;
     }
     
     /**
      *  Image
      */
-    if (self.imageNames && self.imageNames.count > 0) {
-        NSString *imageName = [self.imageNames objectAtIndex:indexPath.row];
-        cell.imageView.image = [self scaleImage:[UIImage imageNamed:imageName]
-                                         toSize:CGSizeMake(30, 30)];
-    }
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     

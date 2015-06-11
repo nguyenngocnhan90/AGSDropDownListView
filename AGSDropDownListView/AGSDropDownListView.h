@@ -18,13 +18,14 @@
     UIColor *color;
     BOOL isMultipleSelection;
     BOOL canSearch;
+    BOOL isShowFromListObjects;
 }
 
 @property (strong, nonatomic) NSArray *options;
-@property (strong, nonatomic) NSString *attribute;
+@property (strong, nonatomic) NSString *attributeName;
+@property (strong, nonatomic) NSString *attributeImage;
 
 @property (nonatomic, strong) NSMutableArray *selectedIndexes;
-@property (nonatomic, strong) NSArray *imageNames;
 @property (nonatomic, assign) id<AGSDropDownListViewDelegate> delegate;
 
 // reload data
@@ -43,6 +44,7 @@
 - (id)initWithTitle:(NSString *)title
             objects:(NSArray *)objects
       attributeName:(NSString *)attributeName
+     attributeImage:(NSString *)attributeImage
               frame:(CGRect)rect
          isMultiple:(BOOL)isMultiple
           canSearch:(BOOL)isSearching;
