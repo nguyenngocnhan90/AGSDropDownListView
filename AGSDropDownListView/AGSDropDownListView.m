@@ -52,6 +52,7 @@
         self.backgroundColor = [UIColor clearColor];
         _kTitleText = [title copy];
         _kDropDownOptions = [options copy];
+        _options = _kDropDownOptions;
         self.selectedIndexes = [[NSMutableArray alloc]init];
         
         _kTableView = [[UITableView alloc] initWithFrame:CGRectMake(0,
@@ -177,15 +178,44 @@
         _textFieldSearch = [[UITextField alloc] init];
         _textFieldSearch.backgroundColor = [UIColor clearColor];
         _textFieldSearch.placeholder = @"Search";
+        _textFieldSearch.delegate = self;
     }
     
     return _textFieldSearch;
+}
+
+#pragma mark - Text field delegate
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if (string.length > 0) {
+        self.options = [self filtOptionsByKeywork:string];
+    }
+    else {
+        self.options = _kDropDownOptions;
+    }
+    
+    [self reloadData];
+    
+    return YES;
+}
+
+- (NSArray *)filtOptionsByKeywork:(NSString *)keyword
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF contains[c] %@",
+                              keyword];
+    
+    return [_kDropDownOptions filteredArrayUsingPredicate:predicate];
 }
 
 #pragma mark - Fade in / Fade out
 
 - (void)fadeIn
 {
+    self.textFieldSearch.text = @"";
+    self.options = _kDropDownOptions;
+    [self reloadData];
+    
     self.transform = CGAffineTransformMakeScale(1.3, 1.3);
     self.alpha = 0;
     [UIView animateWithDuration:.35 animations:^{
@@ -225,7 +255,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [_kDropDownOptions count];
+    return [_options count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -256,7 +286,7 @@
     }
     
     [cell.contentView addSubview:imgarrow];
-    cell.textLabel.text = [_kDropDownOptions objectAtIndex:row];
+    cell.textLabel.text = [_options objectAtIndex:row];
     
     /**
      *  Image

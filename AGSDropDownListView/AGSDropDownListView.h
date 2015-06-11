@@ -11,7 +11,7 @@
 
 @protocol AGSDropDownListViewDelegate;
 
-@interface AGSDropDownListView : UIView<UITableViewDataSource,UITableViewDelegate>{
+@interface AGSDropDownListView : UIView<UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>{
     UITableView *_kTableView;
     NSString *_kTitleText;
     NSArray *_kDropDownOptions;
@@ -19,6 +19,8 @@
     BOOL isMultipleSelection;
     BOOL canSearch;
 }
+
+@property (strong, nonatomic) NSArray *options;
 
 @property (nonatomic, strong) NSMutableArray *selectedIndexes;
 @property (nonatomic, strong) NSArray *imageNames;
