@@ -9,13 +9,18 @@
 #import "AGSDropDownListView.h"
 #import "AGSDropDownCell.h"
 
-#define DROPDOWNVIEW_SCREENINSET 0
-#define DROPDOWNVIEW_HEADER_HEIGHT 44
+#define DROPDOWNVIEW_HEADER_HEIGHT 50
 #define RADIUS 0
 
 #define IMAGE_CHECK_TAG     1000
 
-@interface AGSDropDownListView (private)
+@interface AGSDropDownListView ()
+
+@property (strong, nonatomic) UIButton *buttonDone; // for multiple selection
+@property (strong, nonatomic) UILabel *labelTitle;
+
+@property (strong, nonatomic) UIView *viewSearchBar;
+@property (strong, nonatomic) UITextField *textFieldSearch;
 
 - (void)fadeIn;
 - (void)fadeOut;
@@ -33,9 +38,14 @@
     return self;
 }
 
-- (id)initWithTitle:(NSString *)title options:(NSArray *)options frame:(CGRect)rect isMultiple:(BOOL)isMultiple
+- (id)initWithTitle:(NSString *)title
+            options:(NSArray *)options
+              frame:(CGRect)rect
+         isMultiple:(BOOL)isMultiple
+          canSearch:(BOOL)isSearching
 {
     isMultipleSelection = isMultiple;
+    canSearch = isSearching;
     
     if (self = [super initWithFrame:rect])
     {
@@ -44,10 +54,10 @@
         _kDropDownOptions = [options copy];
         self.selectedIndexes = [[NSMutableArray alloc]init];
         
-        _kTableView = [[UITableView alloc] initWithFrame:CGRectMake(DROPDOWNVIEW_SCREENINSET,
-                                                                   DROPDOWNVIEW_SCREENINSET + DROPDOWNVIEW_HEADER_HEIGHT,
-                                                                   rect.size.width - 2 * DROPDOWNVIEW_SCREENINSET,
-                                                                   rect.size.height - 2 * DROPDOWNVIEW_SCREENINSET - DROPDOWNVIEW_HEADER_HEIGHT - RADIUS)];
+        _kTableView = [[UITableView alloc] initWithFrame:CGRectMake(0,
+                                                                   DROPDOWNVIEW_HEADER_HEIGHT,
+                                                                   rect.size.width,
+                                                                   rect.size.height - DROPDOWNVIEW_HEADER_HEIGHT - RADIUS)];
         
         _kTableView.separatorColor = [UIColor colorWithWhite:1 alpha:.2];
         _kTableView.backgroundColor = [UIColor clearColor];
@@ -56,23 +66,28 @@
         [self addSubview:_kTableView];
         
         if (isMultipleSelection) {
-            UIButton *buttonDone = [UIButton  buttonWithType:UIButtonTypeCustom];
-            [buttonDone setFrame:CGRectMake(rect.size.width - 90, 4, 82, 36)];
-            [buttonDone setImage:[UIImage imageNamed:@"done@2x.png"]
-                        forState:UIControlStateNormal];
-            buttonDone.titleLabel.font = [UIFont boldSystemFontOfSize:13];
-            [buttonDone addTarget:self
-                           action:@selector(buttonDoneClicked:)
-                 forControlEvents:UIControlEventTouchUpInside];
+            [self.buttonDone setFrame:CGRectMake(rect.size.width - 90, 4, 82, 36)];
+            [self addSubview:self.buttonDone];
+        }
+        
+        if (canSearch) {
+            CGFloat offset = isMultipleSelection ? 98 : 0;
+            self.viewSearchBar.frame = CGRectMake(10, 8, rect.size.width - 20 - offset, DROPDOWNVIEW_HEADER_HEIGHT - 16);
+            [self addSubview:self.viewSearchBar];
             
-            [self addSubview:buttonDone];
+            self.textFieldSearch.frame = CGRectMake(8, 0, self.viewSearchBar.frame.size.width - 16, DROPDOWNVIEW_HEADER_HEIGHT - 16);
+            [self.viewSearchBar addSubview:self.textFieldSearch];
+        }
+        else {
+            self.labelTitle.frame = CGRectMake(10, 0, rect.size.width - 20, DROPDOWNVIEW_HEADER_HEIGHT);
+            [self addSubview:self.labelTitle];
         }
     }
     
     return self;
 }
 
-- (id)initWithTitle:(NSString *)title objects:(NSArray *)objects attributeName:(NSString *)attributeName frame:(CGRect)rect isMultiple:(BOOL)isMultiple
+- (id)initWithTitle:(NSString *)title objects:(NSArray *)objects attributeName:(NSString *)attributeName frame:(CGRect)rect isMultiple:(BOOL)isMultiple canSearch:(BOOL)isSearching
 {
     self = [super initWithFrame:rect];
     
@@ -84,7 +99,7 @@
             [dataStrings addObject:str];
         }
         
-        self = [self initWithTitle:title options:dataStrings frame:rect isMultiple:isMultiple];
+        self = [self initWithTitle:title options:dataStrings frame:rect isMultiple:isMultiple canSearch:isSearching];
     }
     
     return self;
@@ -113,7 +128,61 @@
     [self fadeOut];
 }
 
-#pragma mark - Private Methods
+#pragma mark - Constructor
+
+- (UILabel *)labelTitle
+{
+    if (!_labelTitle) {
+        _labelTitle = [[UILabel alloc] init];
+        _labelTitle.backgroundColor = [UIColor clearColor];
+        _labelTitle.textColor = [UIColor whiteColor];
+        _labelTitle.text = _kTitleText;
+    }
+    
+    return _labelTitle;
+}
+
+- (UIButton *)buttonDone
+{
+    if (!_buttonDone) {
+        _buttonDone = [UIButton  buttonWithType:UIButtonTypeCustom];
+        
+        [_buttonDone setImage:[UIImage imageNamed:@"done@2x.png"]
+                     forState:UIControlStateNormal];
+        _buttonDone.titleLabel.font = [UIFont boldSystemFontOfSize:13];
+        [_buttonDone addTarget:self
+                        action:@selector(buttonDoneClicked:)
+              forControlEvents:UIControlEventTouchUpInside];
+    }
+    
+    return _buttonDone;
+}
+
+- (UIView *)viewSearchBar
+{
+    if (!_viewSearchBar) {
+        _viewSearchBar = [[UIView alloc] init];
+        _viewSearchBar.backgroundColor = [UIColor whiteColor];
+        
+        _viewSearchBar.layer.cornerRadius = 3;
+        _viewSearchBar.layer.masksToBounds = YES;
+    }
+    
+    return _viewSearchBar;
+}
+
+- (UITextField *)textFieldSearch
+{
+    if (!_textFieldSearch) {
+        _textFieldSearch = [[UITextField alloc] init];
+        _textFieldSearch.backgroundColor = [UIColor clearColor];
+        _textFieldSearch.placeholder = @"Search";
+    }
+    
+    return _textFieldSearch;
+}
+
+#pragma mark - Fade in / Fade out
 
 - (void)fadeIn
 {
@@ -243,20 +312,19 @@
 }
 
 #pragma mark - DrawDrawDraw
+
 - (void)drawRect:(CGRect)rect
 {
-    CGRect bgRect = CGRectInset(rect, DROPDOWNVIEW_SCREENINSET, DROPDOWNVIEW_SCREENINSET);
-    CGRect titleRect = CGRectMake(DROPDOWNVIEW_SCREENINSET + 10, 10,
-                                  rect.size.width -  2 * (DROPDOWNVIEW_SCREENINSET + 10), DROPDOWNVIEW_HEADER_HEIGHT);
-    CGRect separatorRect = CGRectMake(DROPDOWNVIEW_SCREENINSET, DROPDOWNVIEW_SCREENINSET + DROPDOWNVIEW_HEADER_HEIGHT - 2,
-                                      rect.size.width - 2 * DROPDOWNVIEW_SCREENINSET, 2);
+    CGRect bgRect = CGRectInset(rect, 0, 0);
+    CGRect separatorRect = CGRectMake(0, DROPDOWNVIEW_HEADER_HEIGHT - 2,
+                                      rect.size.width, 2);
     
     CGContextRef ctx = UIGraphicsGetCurrentContext();
     
     [color setFill];
     
-    float x = DROPDOWNVIEW_SCREENINSET;
-    float y = DROPDOWNVIEW_SCREENINSET;
+    float x = 0;
+    float y = 0;
     float width = bgRect.size.width;
     float height = bgRect.size.height;
     CGMutablePathRef path = CGPathCreateMutable();
@@ -271,18 +339,6 @@
     CGPathRelease(path);
     
     [[UIColor colorWithWhite:1 alpha:1.] setFill];
-    
-    if (([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0)) {
-        //TODO : change font in title
-        
-        UIFont *font = [UIFont boldSystemFontOfSize:15];
-        UIColor *aColor = [UIColor whiteColor];
-        
-        NSDictionary *attributes = @{ NSFontAttributeName: font,NSForegroundColorAttributeName:aColor};
-        
-        [_kTitleText drawInRect:titleRect withAttributes:attributes];
-    }
-    
     CGContextFillRect(ctx, separatorRect);
 }
 

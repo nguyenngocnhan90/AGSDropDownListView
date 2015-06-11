@@ -17,6 +17,7 @@
     NSArray *_kDropDownOptions;
     UIColor *color;
     BOOL isMultipleSelection;
+    BOOL canSearch;
 }
 
 @property (nonatomic, strong) NSMutableArray *selectedIndexes;
@@ -33,13 +34,15 @@
 - (id)initWithTitle:(NSString *)title
             options:(NSArray *)options
               frame:(CGRect)rect
-         isMultiple:(BOOL)isMultiple;
+         isMultiple:(BOOL)isMultiple
+          canSearch:(BOOL)isSearching;
 
 - (id)initWithTitle:(NSString *)title
             objects:(NSArray *)objects
       attributeName:(NSString *)attributeName
               frame:(CGRect)rect
-         isMultiple:(BOOL)isMultiple;
+         isMultiple:(BOOL)isMultiple
+          canSearch:(BOOL)isSearching;
 
 // If animated is YES, PopListView will be appeared with FadeIn effect.
 - (void)showInView:(UIView *)aView animated:(BOOL)animated;

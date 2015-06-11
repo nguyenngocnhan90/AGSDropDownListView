@@ -57,7 +57,7 @@
         CGRect frameButton = self.buttonShowDropDown.frame;
         CGRect frame = CGRectMake(frameButton.origin.x, frameButton.origin.y + frameButton.size.height + 20, frameButton.size.width, height);
         
-        _dropDownListView = [[AGSDropDownListView alloc] initWithTitle:@"Choose brand" options:self.options frame:frame isMultiple:NO];
+        _dropDownListView = [[AGSDropDownListView alloc] initWithTitle:@"Choose brand" options:self.options frame:frame isMultiple:NO canSearch:YES];
         _dropDownListView.delegate = self;
     }
     
