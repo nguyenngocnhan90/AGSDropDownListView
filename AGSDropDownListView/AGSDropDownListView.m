@@ -180,6 +180,8 @@
         _textFieldSearch.backgroundColor = [UIColor clearColor];
         _textFieldSearch.placeholder = @"Search";
         _textFieldSearch.delegate = self;
+        
+        [_textFieldSearch addTarget:self action:@selector(textFieldSearchEditingChanged:) forControlEvents:UIControlEventEditingChanged];
     }
     
     return _textFieldSearch;
@@ -187,18 +189,16 @@
 
 #pragma mark - Text field delegate
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+- (void)textFieldSearchEditingChanged:(UITextField *)textField
 {
-    if (string.length > 0) {
-        self.options = [self filtOptionsByKeywork:string];
+    if (textField.text.length > 0) {
+        self.options = [self filtOptionsByKeywork:textField.text];
     }
     else {
         self.options = _kDropDownOptions;
     }
     
     [self reloadData];
-    
-    return YES;
 }
 
 - (NSArray *)filtOptionsByKeywork:(NSString *)keyword
@@ -208,10 +208,14 @@
         array = [_kDropDownOptions valueForKey:_attribute];
     }
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF contains[c] %@",
-                              keyword];
+    NSMutableArray *result = [@[] mutableCopy];
+    for (NSString *str in array) {
+        if ([[str lowercaseString] containsString:[keyword lowercaseString]]) {
+            [result addObject:str];
+        }
+    }
     
-    return [_kDropDownOptions filteredArrayUsingPredicate:predicate];
+    return [NSArray arrayWithArray:result];
 }
 
 #pragma mark - Fade in / Fade out
