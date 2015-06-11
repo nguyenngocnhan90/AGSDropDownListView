@@ -71,8 +71,9 @@
             [self addSubview:self.buttonDone];
         }
         
+        CGFloat offset = isMultipleSelection ? 98 : 0;
+        
         if (canSearch) {
-            CGFloat offset = isMultipleSelection ? 98 : 0;
             self.viewSearchBar.frame = CGRectMake(10, 8, rect.size.width - 20 - offset, DROPDOWNVIEW_HEADER_HEIGHT - 16);
             [self addSubview:self.viewSearchBar];
             
@@ -80,7 +81,7 @@
             [self.viewSearchBar addSubview:self.textFieldSearch];
         }
         else {
-            self.labelTitle.frame = CGRectMake(10, 0, rect.size.width - 20, DROPDOWNVIEW_HEADER_HEIGHT);
+            self.labelTitle.frame = CGRectMake(10, 0, rect.size.width - 20 - offset, DROPDOWNVIEW_HEADER_HEIGHT);
             [self addSubview:self.labelTitle];
         }
     }
@@ -202,6 +203,11 @@
 
 - (NSArray *)filtOptionsByKeywork:(NSString *)keyword
 {
+    NSArray *array = _kDropDownOptions;
+    if (_attribute) {
+        array = [_kDropDownOptions valueForKey:_attribute];
+    }
+    
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF contains[c] %@",
                               keyword];
     
@@ -286,7 +292,14 @@
     }
     
     [cell.contentView addSubview:imgarrow];
-    cell.textLabel.text = [_options objectAtIndex:row];
+    
+    if (_attribute) {
+        id object = [_options objectAtIndex:row];
+        cell.textLabel.text = [object valueForKey:_attribute];
+    }
+    else {
+        cell.textLabel.text = [_options objectAtIndex:row];
+    }
     
     /**
      *  Image

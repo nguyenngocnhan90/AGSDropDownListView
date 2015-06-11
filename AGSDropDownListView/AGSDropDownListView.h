@@ -21,6 +21,7 @@
 }
 
 @property (strong, nonatomic) NSArray *options;
+@property (strong, nonatomic) NSString *attribute;
 
 @property (nonatomic, strong) NSMutableArray *selectedIndexes;
 @property (nonatomic, strong) NSArray *imageNames;
