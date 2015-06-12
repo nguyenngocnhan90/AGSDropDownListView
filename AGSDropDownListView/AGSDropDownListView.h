@@ -21,6 +21,8 @@
     BOOL isShowFromListObjects;
 }
 
+#define DROPDOWNVIEW_HEADER_HEIGHT 50
+
 @property (strong, nonatomic) NSArray *options;
 @property (strong, nonatomic) NSString *attributeName;
 @property (strong, nonatomic) NSString *attributeImage;

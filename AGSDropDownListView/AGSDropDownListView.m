@@ -9,7 +9,6 @@
 #import "AGSDropDownListView.h"
 #import "AGSDropDownCell.h"
 
-#define DROPDOWNVIEW_HEADER_HEIGHT 50
 #define RADIUS 0
 
 #define IMAGE_CHECK_TAG     1000
