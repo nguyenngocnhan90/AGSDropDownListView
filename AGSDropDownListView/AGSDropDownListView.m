@@ -19,7 +19,6 @@
 @property (strong, nonatomic) UILabel *labelTitle;
 
 @property (strong, nonatomic) UIView *viewSearchBar;
-@property (strong, nonatomic) UITextField *textFieldSearch;
 
 - (void)fadeIn;
 - (void)fadeOut;
@@ -109,6 +108,16 @@
     return self;
 }
 
+- (void)setDropDownFrame:(CGRect)frame
+{
+    self.frame = frame;
+    _kTableView.frame = CGRectMake(0,
+                                   DROPDOWNVIEW_HEADER_HEIGHT,
+                                   frame.size.width,
+                                   frame.size.height - DROPDOWNVIEW_HEADER_HEIGHT - RADIUS);
+    [self drawRect:frame];
+}
+
 - (void)buttonDoneClicked:(id)sender
 {
     if (self.delegate
@@ -142,6 +151,7 @@
         _labelTitle.backgroundColor = [UIColor clearColor];
         _labelTitle.textColor = [UIColor whiteColor];
         _labelTitle.text = _kTitleText;
+        _labelTitle.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14];
     }
     
     return _labelTitle;
@@ -154,7 +164,7 @@
         
         [_buttonDone setImage:[UIImage imageNamed:@"done@2x.png"]
                      forState:UIControlStateNormal];
-        _buttonDone.titleLabel.font = [UIFont boldSystemFontOfSize:13];
+        _buttonDone.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:13];
         [_buttonDone addTarget:self
                         action:@selector(buttonDoneClicked:)
               forControlEvents:UIControlEventTouchUpInside];
@@ -183,6 +193,7 @@
         _textFieldSearch.backgroundColor = [UIColor clearColor];
         _textFieldSearch.placeholder = @"Search";
         _textFieldSearch.delegate = self;
+        _textFieldSearch.tag = kSearchViewDropDownTag;
         
         [_textFieldSearch addTarget:self action:@selector(textFieldSearchEditingChanged:) forControlEvents:UIControlEventEditingChanged];
     }
@@ -240,6 +251,8 @@
 
 - (void)fadeOut
 {
+    self.isShowing = NO;
+    
     [UIView animateWithDuration:.35 animations:^{
         self.transform = CGAffineTransformMakeScale(1.3, 1.3);
         self.alpha = 0.0;
@@ -254,9 +267,13 @@
 
 - (void)showInView:(UIView *)aView animated:(BOOL)animated
 {
-    [aView addSubview:self];
-    if (animated) {
-        [self fadeIn];
+    if (!self.isShowing) {
+        [aView addSubview:self];
+        if (animated) {
+            [self fadeIn];
+        }
+        
+        self.isShowing = YES;
     }
 }
 

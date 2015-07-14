@@ -21,7 +21,11 @@
     BOOL isShowFromListObjects;
 }
 
-#define DROPDOWNVIEW_HEADER_HEIGHT 50
+#define DROPDOWNVIEW_HEADER_HEIGHT      50
+#define kSearchViewDropDownTag          1000
+
+@property (strong, nonatomic) UITextField *textFieldSearch;
+@property (nonatomic) BOOL isShowing;
 
 @property (strong, nonatomic) NSArray *options;
 @property (strong, nonatomic) NSString *attributeName;
@@ -50,6 +54,9 @@
               frame:(CGRect)rect
          isMultiple:(BOOL)isMultiple
           canSearch:(BOOL)isSearching;
+
+// Set frame for drop view
+- (void)setDropDownFrame:(CGRect)frame;
 
 // If animated is YES, PopListView will be appeared with FadeIn effect.
 - (void)showInView:(UIView *)aView animated:(BOOL)animated;
